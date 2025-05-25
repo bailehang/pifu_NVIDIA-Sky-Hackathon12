@@ -1,0 +1,22 @@
+# skin_analysis/config.yaml
+
+api_settings:
+  url: "https://www.ailabapi.com/api/portrait/analysis/skin-analysis"
+  key: hou2D7QEU6HcNemBBwKflTCWVLzbfAYkFvXo8tOdKmavkLD0JtwYPdJFynAXQRq3
+  api_key_header_name: "ailabapi-api-key"  # 新增: API Key在HTTP Header中的名称
+  request_timeout_seconds: 30             # 新增: API请求超时时间（秒）
+
+default_image:
+  path: "./image/1.png"
+
+file_upload_details:                        # 新增: 文件上传相关细节
+  form_field_name: "image"                # 新增: 图片文件在表单中的字段名
+  # sent_filename_strategy: "placeholder" # 可选: "placeholder" 或 "actual_filename_after_conversion"
+  sent_filename_placeholder: "file"         # 新增: 上传时，在 multipart/form-data 中为文件指定的名称
+  content_type: "application/octet-stream"  # 新增: 上传文件的MIME类型
+
+general_settings:                           # 新增: 通用设置
+  default_encoding: "utf-8"               # 新增: 默认文本编码
+  json_indent: 4                          # 新增: JSON输出的缩进空格数
+  json_ensure_ascii: false                # 新增: JSON输出时是否确保ASCII
+  
