@@ -74,21 +74,22 @@ ___
 
 > 实时截图，分析皮肤量化数据
 >
-> ![image-20250525134914902](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525134914902.png)
-
-
+> ![image4](1.png)
+![image3](2.png)
 
 2、多专家思维引导思考
 
 基于严谨的提示词工程与NVIDIA NIM大语言模型的高度融合，以多专家的视角引导模型通过多专家视角分析用户皮肤数据，精准抓住用户最大的皮肤痛点。
-
-![image-20250525135206111](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525135206111.png)
+![image2](3.png)
 
 3、稳定整合信息能力
 
 结合Qwen3模型根据用户输入的内容难度，任意切换non-thinking和long-thinking状态，确保用户的问题真正能够得到解决。
 
-![image-20250525135246670](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525135246670.png)
+
+![image1](4.png)
+![image1](5.png)
+![image2](6.png)
 
 4、安全数据与隐私处理
 
@@ -104,11 +105,10 @@ ___
 
 根据2024年中国美妆行业白皮书，我们不难发现，如有以下趋势：
 
-![image-20250525142856669](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525142856669.png)
 
-![image-20250525142937295](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525142937295.png)
+![image1](7.png)
 
-
+![image1](8.png)
 
 而我们目前选型赛道是为各大护肤产品厂商，根据用户最直接的皮肤信息，选取最合适的品牌产品，在这个零售行业中站稳脚跟，跟各大厂商紧密绑定，认同用户意愿。
 
