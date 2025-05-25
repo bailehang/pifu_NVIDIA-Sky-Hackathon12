@@ -74,7 +74,7 @@ ___
 
 > 实时截图，分析皮肤量化数据
 >
-> ![image-20250525134914902](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525134914902.png)
+> ![image-20250525134914902](img/1.png)
 
 
 
@@ -82,7 +82,7 @@ ___
 
 基于严谨的提示词工程与NVIDIA NIM大语言模型的高度融合，以多专家的视角引导模型通过多专家视角分析用户皮肤数据，精准抓住用户最大的皮肤痛点。
 
-![image-20250525135206111](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525135206111.png)
+![image-20250525135206111](img/2.png)
 
 
 
@@ -90,15 +90,15 @@ ___
 
 结合Qwen3模型根据用户输入的内容难度，任意切换non-thinking和long-thinking状态，确保用户的问题真正能够得到解决。
 
-![image-20250525135246670](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525135246670.png)
+![image-20250525135246670](img/3.png)
 
 4、以关键词注入url的形式调用JS脚本
 
-![image-20250525201950530](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525201950530.png)
+![image-20250525201950530](img/4.png)
 
 通过执行JS代码片段，获取跟当前用户脸部皮肤数据匹配度较高的产品信息，整理为json格式，如下
 
-![image-20250525202512646](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525202512646.png)
+![image-20250525202512646](img/5.png)
 
 模型会根据Tavily Search搜索跟置信度较高的皮肤数据指标有关的关键词，以关键词的形势注入搜索url中，然后将返回的产品信息数据，整合外部信息，让phi4-mini-instruct模型进行处理，挑选3~5个合适的产品进行推荐介绍，并附带购物链接。
 
@@ -108,7 +108,7 @@ ___
 
 基于本地化的项目能够在安全方面确保用户上传的皮肤照片和个人信息的安全性。同时，采用匿名化处理技术，保护用户隐私。
 
-![image-20250525202758055](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525202758055.png)
+![image-20250525202758055](img/6.png)
 
 
 
@@ -120,9 +120,9 @@ ___
 
 根据2024年中国美妆行业白皮书，我们不难发现，如有以下趋势：
 
-![image-20250525142856669](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525142856669.png)
+![image-20250525142856669](img/7.png)
 
-![image-20250525142937295](C:/Users/ASUS/AppData/Roaming/Typora/typora-user-images/image-20250525142937295.png)
+![image-20250525142937295](img/8.png)
 
 
 
