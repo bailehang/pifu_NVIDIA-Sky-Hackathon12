@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>皮肤分析助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#EC4899',
+                        accent: '#10B981',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .gradient-text {
+                background-clip: text;
+                -webkit-background-clip: text;
+                color: transparent;
+            }
+            .glass-effect {
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+            }
+            .pulse-slow {
+                animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            .float {
+                animation: float 3s ease-in-out infinite;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-dark to-slate-900 text-light min-h-screen font-inter overflow-x-hidden">
+    <!-- 粒子背景 -->
+    <div id="particles-js" class="fixed inset-0 z-0 opacity-30"></div>
+
+    <div class="relative z-10 container mx-auto px-4 py-8 max-w-6xl">
+        <!-- 头部 -->
+        <header class="text-center mb-12">
+            <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold mb-4 gradient-text bg-gradient-to-r from-primary to-secondary">
+                皮肤分析助手
+            </h1>
+            <p class="text-slate-300 text-lg max-w-2xl mx-auto">
+                上传您的皮肤照片，获取专业分析结果，探索肌肤的奥秘
+            </p>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="bg-dark/50 glass-effect rounded-2xl shadow-2xl p-8 mb-12 border border-white/10">
+            <!-- 上传区域 -->
+            <section class="mb-12">
+                <div id="drop-area" class="border-2 border-dashed border-primary/50 rounded-xl p-10 text-center cursor-pointer transition-all duration-300 hover:border-primary/80 hover:bg-primary/5">
+                    <div class="upload-icon mb-4 text-5xl text-primary/80 float">
+                        <i class="fa fa-cloud-upload"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">拖放您的皮肤照片到这里</h3>
+                    <p class="text-slate-400 mb-6">或者</p>
+                    <label class="bg-primary hover:bg-primary/80 text-white font-medium py-3 px-8 rounded-full cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                        <span>选择照片</span>
+                        <input type="file" id="file-input" class="hidden" accept="image/*">
+                    </label>
+                    <p class="mt-4 text-sm text-slate-500">支持 JPG, PNG, WEBP 格式</p>
+                </div>
+
+                <!-- 预览区域 -->
+                <div id="preview-container" class="mt-8 hidden">
+                    <h3 class="text-xl font-semibold mb-4">预览</h3>
+                    <div class="relative rounded-xl overflow-hidden bg-slate-800 border border-slate-700">
+                        <img id="image-preview" src="" alt="预览图" class="w-full h-auto max-h-80 object-contain">
+                        <div id="remove-image" class="absolute top-3 right-3 bg-red-500/80 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center cursor-pointer transition-all duration-300 transform hover:scale-110">
+                            <i class="fa fa-times"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 操作按钮 -->
+            <section class="mb-12 flex flex-col sm:flex-row justify-center gap-4">
+                <button id="analyze-btn" class="bg-gradient-to-r from-accent to-green-500 text-white font-bold py-4 px-12 rounded-full text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center gap-2 opacity-70 cursor-not-allowed" disabled>
+                    <i class="fa fa-flask"></i>
+                    <span>开始分析</span>
+                </button>
+                <button id="reset-btn" class="bg-slate-700 hover:bg-slate-600 text-white font-medium py-4 px-12 rounded-full transition-all duration-300 flex items-center justify-center gap-2">
+                    <i class="fa fa-refresh"></i>
+                    <span>重置</span>
+                </button>
+            </section>
+
+            <!-- 分析结果/命令行输出 -->
+            <section>
+                <div class="border border-slate-700 rounded-xl overflow-hidden bg-slate-900/80">
+                    <div class="bg-slate-800 px-4 py-3 border-b border-slate-700 flex items-center">
+                        <div class="flex gap-2 mr-4">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <h3 class="font-medium">分析结果</h3>
+                    </div>
+                    <div id="output-container" class="p-4 h-64 overflow-y-auto font-mono text-sm text-green-400 bg-slate-900/90">
+                        <p>等待上传皮肤照片并点击"开始分析"按钮...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="text-center text-slate-500 text-sm">
+            <p>© 2025 皮肤分析助手 | 使用先进AI技术进行皮肤状况分析</p>
+        </footer>
+    </div>
+
+    <!-- 加载模态框 -->
+    <div id="loading-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden">
+        <div class="bg-slate-800 rounded-xl p-8 max-w-md w-full mx-4 border border-slate-700 shadow-2xl">
+            <div class="text-center">
+                <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent mb-4"></div>
+                <h3 class="text-xl font-semibold mb-2">正在分析您的皮肤...</h3>
+                <p class="text-slate-400">这可能需要一些时间，请耐心等待</p>
+                <div class="mt-6">
+                    <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-gradient-to-r from-primary to-secondary w-0 transition-all duration-300"></div>
+                    </div>
+                    <p id="progress-text" class="mt-2 text-sm text-slate-400">准备中...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // 粒子背景初始化
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#4F46E5"
+                },
+                "shape": {
+                    "type": "circle",
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": true
+                },
+                "size": {
+                    "value": 3,
+                    "random": true
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#4F46E5",
+                    "opacity": 0.2,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 1,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 0.5
+                        }
+                    },
+                    "push": {
+                        "particles_nb": 3
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // 文件上传功能
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const imagePreview = document.getElementById('image-preview');
+        const previewContainer = document.getElementById('preview-container');
+        const removeImage = document.getElementById('remove-image');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const outputContainer = document.getElementById('output-container');
+        const loadingModal = document.getElementById('loading-modal');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        // 阻止默认拖放行为
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // 高亮拖放区域
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('border-primary', 'bg-primary/10');
+            dropArea.classList.remove('border-primary/50', 'bg-primary/5');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('border-primary', 'bg-primary/10');
+            dropArea.classList.add('border-primary/50', 'bg-primary/5');
+        }
+
+        // 处理拖放文件
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        // 处理文件选择
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        // 处理文件
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.match('image.*')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        previewContainer.classList.remove('hidden');
+                        analyzeBtn.disabled = false;
+                        analyzeBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                        outputContainer.innerHTML = '<p>已上传图片，点击"开始分析"按钮进行皮肤分析...</p>';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('请上传有效的图片文件！');
+                }
+            }
+        }
+
+        // 移除图片
+        removeImage.addEventListener('click', function() {
+            resetFileInput();
+            previewContainer.classList.add('hidden');
+            analyzeBtn.disabled = true;
+            analyzeBtn.classList.add('opacity-70', 'cursor-not-allowed');
+            outputContainer.innerHTML = '<p>等待上传皮肤照片并点击"开始分析"按钮...</p>';
+        });
+
+        // 重置文件输入
+        function resetFileInput() {
+            fileInput.value = '';
+            imagePreview.src = '';
+        }
+
+        // 重置按钮
+        resetBtn.addEventListener('click', function() {
+            resetFileInput();
+            previewContainer.classList.add('hidden');
+            analyzeBtn.disabled = true;
+            analyzeBtn.classList.add('opacity-70', 'cursor-not-allowed');
+            outputContainer.innerHTML = '<p>等待上传皮肤照片并点击"开始分析"按钮...</p>';
+        });
+
+        // 分析按钮
+        analyzeBtn.addEventListener('click', function() {
+            if (imagePreview.src) {
+                // 显示加载模态框
+                loadingModal.classList.remove('hidden');
+                outputContainer.innerHTML = '<p>开始上传图片...</p>';
+                
+                // 准备表单数据
+                const formData = new FormData();
+                const fileInput = document.getElementById('file-input');
+                formData.append('image', fileInput.files[0]);
+                
+                // 上传图片并获取分析结果
+                fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('分析请求失败');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        progressBar.style.width = '100%';
+                        progressText.textContent = '分析完成！';
+                        
+                        // 延迟显示结果，增强视觉体验
+                        setTimeout(() => {
+                            loadingModal.classList.add('hidden');
+                            displayAnalysisResults(data.results);
+                        }, 1000);
+                    } else {
+                        throw new Error(data.message || '分析失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loadingModal.classList.add('hidden');
+                    outputContainer.innerHTML += `<p class="text-red-500">错误: ${error.message}</p>`;
+                });
+            }
+        });
+
+        // 显示分析结果
+        function displayAnalysisResults(results) {
+            if (!results) {
+                outputContainer.innerHTML += '<p class="text-red-500">未收到分析结果</p>';
+                return;
+            }
+            
+            // 构建结果HTML
+            let resultsHtml = `
+                <p class="mb-2">分析完成! 以下是您的皮肤分析结果:</p>
+                <div class="mb-4 p-3 bg-slate-800/50 rounded-lg">
+                    <div class="flex justify-between mb-2">
+                        <span>皮肤类型</span>
+                        <span class="text-green-400 font-medium">${results.skin_type}</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>水分含量</span>
+                        <span class="text-yellow-400 font-medium">${results.moisture_level}%</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>油分含量</span>
+                        <span class="text-red-400 font-medium">${results.oil_level}%</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>色素沉着</span>
+                        <span class="text-green-400 font-medium">${results.pigmentation_level}%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>敏感程度</span>
+                        <span class="text-yellow-400 font-medium">${results.sensitivity_level}%</span>
+                    </div>
+                </div>
+                <p class="mb-2">皮肤建议:</p>
+                <ul class="list-disc pl-5 mb-4 text-slate-300">
+            `;
+            
+            // 添加建议列表
+            results.recommendations.forEach(recommendation => {
+                resultsHtml += `<li>${recommendation}</li>`;
+            });
+            
+            // 完成HTML
+            resultsHtml += `
+                </ul>
+                <p class="text-blue-400">提示: 本分析仅供参考，如有皮肤问题请咨询专业皮肤科医生。</p>
+            `;
+            
+            outputContainer.innerHTML = resultsHtml;
+            
+            // 添加动画效果
+            const lines = outputContainer.querySelectorAll('p, div, ul');
+            lines.forEach((line, index) => {
+                line.style.opacity = '0';
+                line.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    line.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    line.style.opacity = '1';
+                    line.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        }
+    </script>
+</body>
+</html>
+    
